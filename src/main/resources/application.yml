@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: scheduler
+  profiles:
+    include:
+      - env # DB 접근 관련 정보들 은닉화
