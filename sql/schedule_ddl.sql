@@ -1,0 +1,9 @@
+CREATE TABLE schedule
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id  BIGINT NOT NULL,
+    content    TEXT   NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_member FOREIGN KEY (member_id) REFERENCES member (id) -- Member 테이블 참조
+);
