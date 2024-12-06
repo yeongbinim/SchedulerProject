@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import yeim.scheduler.common.exception.InvalidPasswordException;
 import yeim.scheduler.common.exception.ResourceNotFoundException;
+import yeim.scheduler.member.domain.Member;
+import yeim.scheduler.member.infrastructure.MemberRepository;
 import yeim.scheduler.schedule.domain.Schedule;
 import yeim.scheduler.schedule.domain.ScheduleCreateRequest;
 import yeim.scheduler.schedule.domain.ScheduleDeleteRequest;
@@ -16,9 +18,12 @@ import yeim.scheduler.schedule.infrastructure.ScheduleRepository;
 public class ScheduleService {
 
 	private final ScheduleRepository scheduleRepository;
+	private final MemberRepository memberRepository;
 
-	public Schedule createSchedule(ScheduleCreateRequest scheduleCreateRequest) {
-		Schedule schedule = Schedule.from(scheduleCreateRequest);
+	public Schedule createSchedule(Long memberId, ScheduleCreateRequest scheduleCreateRequest) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
+		Schedule schedule = Schedule.from(member, scheduleCreateRequest);
 		return scheduleRepository.create(schedule);
 	}
 
@@ -35,7 +40,7 @@ public class ScheduleService {
 		Schedule schedule = getScheduleById(id);
 
 		// 비밀번호 검증
-		if (!schedule.verifyPassword(scheduleUpdateRequest.getPassword())) {
+		if (!schedule.getMember().verifyPassword(scheduleUpdateRequest.getPassword())) {
 			throw new InvalidPasswordException();
 		}
 
@@ -46,7 +51,7 @@ public class ScheduleService {
 		Schedule schedule = getScheduleById(id);
 
 		// 비밀번호 검증
-		if (!schedule.verifyPassword(scheduleDeleteRequest.getPassword())) {
+		if (!schedule.getMember().verifyPassword(scheduleDeleteRequest.getPassword())) {
 			throw new InvalidPasswordException();
 		}
 

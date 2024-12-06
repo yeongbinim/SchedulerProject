@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import yeim.scheduler.schedule.domain.Schedule;
 import yeim.scheduler.schedule.domain.ScheduleCreateRequest;
@@ -45,8 +46,9 @@ public class ApiScheduleController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createSchedule(@RequestBody ScheduleCreateRequest request) {
-		Schedule createdSchedule = scheduleService.createSchedule(request);
+	public ResponseEntity<Void> createSchedule(@RequestParam Long memberId,
+		@RequestBody ScheduleCreateRequest request) {
+		Schedule createdSchedule = scheduleService.createSchedule(memberId, request);
 
 		return ResponseEntity
 			.created(URI.create("/api/schedules/" + createdSchedule.getId()))
