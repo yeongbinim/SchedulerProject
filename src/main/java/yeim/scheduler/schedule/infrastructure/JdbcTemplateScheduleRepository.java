@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import yeim.scheduler.member.domain.Member;
+import yeim.scheduler.member.infrastructure.MemberRepository;
 import yeim.scheduler.schedule.domain.Schedule;
 
 @Repository
@@ -17,25 +19,27 @@ import yeim.scheduler.schedule.domain.Schedule;
 public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
 	private final JdbcTemplate template;
+	private final MemberRepository memberRepository;
 
-	public JdbcTemplateScheduleRepository(DataSource dataSource) {
+	public JdbcTemplateScheduleRepository(DataSource dataSource,
+		MemberRepository memberRepository) {
 		this.template = new JdbcTemplate(dataSource);
+		this.memberRepository = memberRepository;
 	}
 
 	@Override
 	public Schedule create(Schedule schedule) {
 		String sql = """
-				INSERT INTO task (author, password, content, created_at, updated_at)
-				VALUES (?, ?, ?, ?, ?)
+			    INSERT INTO schedule (member_id, content, created_at, updated_at)
+			    VALUES (?, ?, ?, ?)
 			""";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		template.update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-			ps.setString(1, schedule.getAuthor());
-			ps.setString(2, schedule.getPassword());
-			ps.setString(3, schedule.getContent());
-			ps.setString(4, schedule.getCreatedAt().toString());
-			ps.setString(5, schedule.getUpdatedAt().toString());
+			ps.setLong(1, schedule.getMember().getId());
+			ps.setString(2, schedule.getContent());
+			ps.setString(3, schedule.getCreatedAt().toString());
+			ps.setString(4, schedule.getUpdatedAt().toString());
 			return ps;
 		}, keyHolder);
 
@@ -47,8 +51,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public List<Schedule> findAll() {
 		String sql = """
-			SELECT id, author, content, password, created_at, updated_at
-			FROM task
+			SELECT id, member_id, content, created_at, updated_at
+			FROM schedule
 			""";
 		return template.query(sql, scheduleRowMapper());
 	}
@@ -56,8 +60,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public Optional<Schedule> findById(Long id) {
 		String sql = """
-			SELECT id, author, content, password, created_at, updated_at
-			FROM task
+			SELECT id, member_id, content, created_at, updated_at
+			FROM schedule
 			WHERE id = ?
 			""";
 		Schedule schedule = template.queryForObject(sql, scheduleRowMapper(), id);
@@ -67,18 +71,17 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public Schedule update(Long id, Schedule schedule) {
 		String sql = """
-			UPDATE task
-			SET author = ?, password = ?, content = ?, created_at = ?, updated_at = ?
+			UPDATE schedule
+			SET member_id = ?, content = ?, created_at = ?, updated_at = ?
 			WHERE id = ?
 			""";
 
 		template.update(
 			sql,
-			schedule.getAuthor(),
-			schedule.getPassword(),
+			schedule.getMember().getId(),
 			schedule.getContent(),
-			schedule.getCreatedAt(),
-			schedule.getUpdatedAt(),
+			schedule.getCreatedAt().toString(),
+			schedule.getUpdatedAt().toString(),
 			id
 		);
 		return schedule;
@@ -87,20 +90,22 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public void delete(Long id) {
 		String sql = """
-			    DELETE FROM task
-			    WHERE id = ?
+			DELETE FROM schedule
+			WHERE id = ?
 			""";
 		template.update(sql, id);
 	}
 
 	private RowMapper<Schedule> scheduleRowMapper() {
-		return ((rs, rowNum) -> new Schedule(
-			rs.getLong("id"),
-			rs.getString("author"),
-			rs.getString("content"),
-			rs.getString("password"),
-			rs.getTimestamp("created_at").toLocalDateTime(),
-			rs.getTimestamp("updated_at").toLocalDateTime()
-		));
+		return (rs, rowNum) -> {
+			Member member = memberRepository.findById(rs.getLong("member_id")).orElse(null);
+			return new Schedule(
+				rs.getLong("id"),
+				member,
+				rs.getString("content"),
+				rs.getTimestamp("created_at").toLocalDateTime(),
+				rs.getTimestamp("updated_at").toLocalDateTime()
+			);
+		};
 	}
 }

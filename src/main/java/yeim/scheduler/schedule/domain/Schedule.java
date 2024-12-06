@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import yeim.scheduler.member.domain.Member;
 
 @Getter
 @AllArgsConstructor
@@ -11,18 +12,16 @@ public class Schedule {
 
 	@Setter
 	private Long id;
-	private String author;
+	private Member member;
 	private String content;
-	private String password;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static Schedule from(ScheduleCreateRequest request) {
+	public static Schedule from(Member member, ScheduleCreateRequest request) {
 		return new Schedule(
 			null,
-			request.getAuthor(),
+			member,
 			request.getContent(),
-			request.getPassword(),
 			LocalDateTime.now(),
 			LocalDateTime.now()
 		);
@@ -31,15 +30,10 @@ public class Schedule {
 	public Schedule update(ScheduleUpdateRequest request) {
 		return new Schedule(
 			id,
-			author,
+			member,
 			request.getContent(),
-			request.getPassword(),
 			createdAt,
 			LocalDateTime.now()
 		);
-	}
-
-	public boolean verifyPassword(String password) {
-		return this.password.equals(password);
 	}
 }
