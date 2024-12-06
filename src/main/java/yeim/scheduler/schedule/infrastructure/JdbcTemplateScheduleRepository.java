@@ -25,8 +25,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public Schedule create(Schedule schedule) {
 		String sql = """
-				INSERT INTO task (author, password, content)
-				VALUES (?, ?, ?)
+				INSERT INTO task (author, password, content, created_at, updated_at)
+				VALUES (?, ?, ?, ?, ?)
 			""";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		template.update(connection -> {
@@ -34,6 +34,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 			ps.setString(1, schedule.getAuthor());
 			ps.setString(2, schedule.getPassword());
 			ps.setString(3, schedule.getContent());
+			ps.setString(4, schedule.getCreatedAt().toString());
+			ps.setString(5, schedule.getUpdatedAt().toString());
 			return ps;
 		}, keyHolder);
 
@@ -66,7 +68,7 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	public Schedule update(Long id, Schedule schedule) {
 		String sql = """
 			UPDATE task
-			SET author = ?, password = ?, content = ?
+			SET author = ?, password = ?, content = ?, created_at = ?, updated_at = ?
 			WHERE id = ?
 			""";
 
@@ -75,6 +77,8 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 			schedule.getAuthor(),
 			schedule.getPassword(),
 			schedule.getContent(),
+			schedule.getCreatedAt(),
+			schedule.getUpdatedAt(),
 			id
 		);
 		return schedule;
