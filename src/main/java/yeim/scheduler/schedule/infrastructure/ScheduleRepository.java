@@ -1,14 +1,14 @@
 package yeim.scheduler.schedule.infrastructure;
 
-import java.util.List;
 import java.util.Optional;
+import yeim.scheduler.common.PageResponse;
 import yeim.scheduler.schedule.domain.Schedule;
 
 public interface ScheduleRepository {
 
 	Schedule create(Schedule schedule);
 
-	List<Schedule> findAll();
+	PageResponse<Schedule> findAll(int page, int size);
 
 	Optional<Schedule> findById(Long id);
 

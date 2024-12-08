@@ -1,8 +1,8 @@
 package yeim.scheduler.schedule.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import yeim.scheduler.common.PageResponse;
 import yeim.scheduler.common.exception.InvalidPasswordException;
 import yeim.scheduler.common.exception.ResourceNotFoundException;
 import yeim.scheduler.member.domain.Member;
@@ -27,8 +27,8 @@ public class ScheduleService {
 		return scheduleRepository.create(schedule);
 	}
 
-	public List<Schedule> getAllSchedules() {
-		return scheduleRepository.findAll();
+	public PageResponse<Schedule> getAllSchedules(int page, int size) {
+		return scheduleRepository.findAll(page, size);
 	}
 
 	public Schedule getScheduleById(Long id) {
