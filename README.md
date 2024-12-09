@@ -13,19 +13,20 @@
 ## 구현 결과
 
 - POST
+
   <img width="500" alt="스크린샷 2024-12-05 오후 3 02 21" src="https://github.com/user-attachments/assets/51f1706e-5632-48c1-8a35-128bd7303fa3">
 - GET all
+
   <img width="500" alt="스크린샷 2024-12-05 오후 3 02 33" src="https://github.com/user-attachments/assets/bfa56d93-c8b0-42a3-a408-8db266aad538">
 - GET
+
   <img width="500" alt="스크린샷 2024-12-05 오후 3 02 45" src="https://github.com/user-attachments/assets/cde96be8-bb1b-498b-b4c1-55dd1414e77f">
 - PUT
+
   <img width="500" alt="스크린샷 2024-12-05 오후 3 03 03" src="https://github.com/user-attachments/assets/fcbb7baf-f97d-455c-8184-11fcb774ec4e">
 - DELETE
+
   <img width="500" alt="스크린샷 2024-12-05 오후 3 03 14" src="https://github.com/user-attachments/assets/2d535d83-91cd-4027-9d17-7c55ed2e137f">
-
-
-
-
 
 
 ## ERD 설계
