@@ -27,16 +27,7 @@ import yeim.scheduler.schedule.service.ScheduleService;
 public class ApiScheduleController {
 
 	private final ScheduleService scheduleService;
-
-//	@GetMapping
-//	public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
-//		List<Schedule> schedules = scheduleService.getAllSchedules();
-//
-//		return ResponseEntity
-//			.ok()
-//			.body(schedules.stream().map(ScheduleResponse::from).toList());
-//	}
-
+	
 	@GetMapping
 	public ResponseEntity<PageResponse<Schedule>> getAllSchedules(
 		@RequestParam(defaultValue = "0") int page,
