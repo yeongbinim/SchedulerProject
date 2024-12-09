@@ -1,10 +1,13 @@
 package yeim.scheduler.schedule.service;
 
+import static yeim.scheduler.common.exception.enums.MemberExceptionType.MEMBER_NOT_FOUND;
+import static yeim.scheduler.common.exception.enums.MemberExceptionType.PASSWORD_NOT_MATCH;
+import static yeim.scheduler.common.exception.enums.ScheduleExceptionType.SCHEDULE_NOT_FOUND;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import yeim.scheduler.common.PageResponse;
-import yeim.scheduler.common.exception.InvalidPasswordException;
-import yeim.scheduler.common.exception.ResourceNotFoundException;
+import yeim.scheduler.common.exception.CustomException;
 import yeim.scheduler.member.domain.Member;
 import yeim.scheduler.member.infrastructure.MemberRepository;
 import yeim.scheduler.schedule.domain.Schedule;
@@ -22,7 +25,7 @@ public class ScheduleService {
 
 	public Schedule createSchedule(Long memberId, ScheduleCreateRequest scheduleCreateRequest) {
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
+			.orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 		Schedule schedule = Schedule.from(member, scheduleCreateRequest);
 		return scheduleRepository.create(schedule);
 	}
@@ -33,7 +36,7 @@ public class ScheduleService {
 
 	public Schedule getScheduleById(Long id) {
 		return scheduleRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Schedules", id));
+			.orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND));
 	}
 
 	public Schedule updateSchedule(Long id, ScheduleUpdateRequest scheduleUpdateRequest) {
@@ -41,7 +44,7 @@ public class ScheduleService {
 
 		// 비밀번호 검증
 		if (!schedule.getMember().verifyPassword(scheduleUpdateRequest.getPassword())) {
-			throw new InvalidPasswordException();
+			throw new CustomException(PASSWORD_NOT_MATCH);
 		}
 
 		return scheduleRepository.update(id, schedule.update(scheduleUpdateRequest));
@@ -52,7 +55,7 @@ public class ScheduleService {
 
 		// 비밀번호 검증
 		if (!schedule.getMember().verifyPassword(scheduleDeleteRequest.getPassword())) {
-			throw new InvalidPasswordException();
+			throw new CustomException(PASSWORD_NOT_MATCH);
 		}
 
 		scheduleRepository.delete(id);
