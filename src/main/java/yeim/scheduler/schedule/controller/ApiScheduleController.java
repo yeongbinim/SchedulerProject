@@ -1,5 +1,6 @@
 package yeim.scheduler.schedule.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,16 +27,7 @@ import yeim.scheduler.schedule.service.ScheduleService;
 public class ApiScheduleController {
 
 	private final ScheduleService scheduleService;
-
-//	@GetMapping
-//	public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
-//		List<Schedule> schedules = scheduleService.getAllSchedules();
-//
-//		return ResponseEntity
-//			.ok()
-//			.body(schedules.stream().map(ScheduleResponse::from).toList());
-//	}
-
+	
 	@GetMapping
 	public ResponseEntity<PageResponse<Schedule>> getAllSchedules(
 		@RequestParam(defaultValue = "0") int page,
@@ -55,7 +47,7 @@ public class ApiScheduleController {
 
 	@PostMapping
 	public ResponseEntity<Void> createSchedule(@RequestParam Long memberId,
-		@RequestBody ScheduleCreateRequest request) {
+		@Valid @RequestBody ScheduleCreateRequest request) {
 		Schedule createdSchedule = scheduleService.createSchedule(memberId, request);
 
 		return ResponseEntity
@@ -65,7 +57,7 @@ public class ApiScheduleController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<ScheduleResponse> updateSchedule(@PathVariable Long id,
-		@RequestBody ScheduleUpdateRequest request) {
+		@Valid @RequestBody ScheduleUpdateRequest request) {
 		Schedule schedule = scheduleService.updateSchedule(id, request);
 		return ResponseEntity
 			.ok()
@@ -74,7 +66,7 @@ public class ApiScheduleController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteSchedule(@PathVariable Long id,
-		@RequestBody ScheduleDeleteRequest request) {
+		@Valid @RequestBody ScheduleDeleteRequest request) {
 		scheduleService.deleteSchedule(id, request);
 
 		return ResponseEntity
