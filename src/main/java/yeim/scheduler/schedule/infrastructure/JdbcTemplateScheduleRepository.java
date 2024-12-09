@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import yeim.scheduler.common.PageResponse;
 import yeim.scheduler.member.domain.Member;
 import yeim.scheduler.member.infrastructure.MemberRepository;
 import yeim.scheduler.schedule.domain.Schedule;
@@ -49,12 +50,24 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	}
 
 	@Override
-	public List<Schedule> findAll() {
+	public PageResponse<Schedule> findAll(int page, int size) {
+		String rowCountSql = "SELECT count(*) FROM schedule";
+		int total = template.queryForObject(rowCountSql, Integer.class);
+
+		int offset = page * size;
 		String sql = """
 			SELECT id, member_id, content, created_at, updated_at
 			FROM schedule
+			ORDER BY updated_at DESC
+			LIMIT ? OFFSET ?
 			""";
-		return template.query(sql, scheduleRowMapper());
+		List<Schedule> schedules = template.query(
+			sql,
+			new Object[]{size, offset},
+			scheduleRowMapper()
+		);
+
+		return new PageResponse<>(schedules, page, size, total);
 	}
 
 	@Override

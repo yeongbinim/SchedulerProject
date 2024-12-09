@@ -15,29 +15,31 @@ import {
 export function init($main) {
   const $target = document.createElement("div");
   $target.setAttribute("id", "schedule");
-  $target.addEventListener('click',
-      async (event) => {
-        const action = event.target.dataset.action;
-        const scheduleId = event.target.closest('.schedule-item')?.dataset.id;
+  $target.addEventListener('click', async (event) => {
+    const action = event.target.dataset.action;
+    const scheduleId = event.target.closest('.schedule-item')?.dataset.id;
 
-        if (action === 'view' && scheduleId) {
-          await viewSchedule(scheduleId);
-        } else if (action === 'edit' && scheduleId) {
-          await editScheduleForm(scheduleId);
-        } else if (action === 'delete' && scheduleId) {
-          await deleteScheduleHandler(scheduleId);
-        } else if (action === 'create') {
-          await createScheduleForm();
-        } else if (action === 'back') {
-          await loadAllSchedules();
-        }
-      });
+    if (action === 'view' && scheduleId) {
+      await viewSchedule(scheduleId);
+    } else if (action === 'edit' && scheduleId) {
+      await editScheduleForm(scheduleId);
+    } else if (action === 'delete' && scheduleId) {
+      await deleteScheduleHandler(scheduleId);
+    } else if (action === 'create') {
+      await createScheduleForm();
+    } else if (action === 'back') {
+      await loadAllSchedules();
+    } else if (action.startsWith('page-')) {
+      const pageNumber = parseInt(action.split('-')[1]);
+      await loadAllSchedules(pageNumber);
+    }
+  });
   $main.appendChild($target);
   loadAllSchedules();
 }
 
-async function loadAllSchedules() {
-  const schedules = await getSchedules();
+async function loadAllSchedules(page = 0) {
+  const schedules = await getSchedules(page);
   renderAllSchedules(schedules);
 }
 

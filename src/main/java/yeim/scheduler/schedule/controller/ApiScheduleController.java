@@ -1,7 +1,6 @@
 package yeim.scheduler.schedule.controller;
 
 import java.net.URI;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import yeim.scheduler.common.PageResponse;
 import yeim.scheduler.schedule.domain.Schedule;
 import yeim.scheduler.schedule.domain.ScheduleCreateRequest;
 import yeim.scheduler.schedule.domain.ScheduleDeleteRequest;
@@ -27,13 +27,21 @@ public class ApiScheduleController {
 
 	private final ScheduleService scheduleService;
 
-	@GetMapping
-	public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
-		List<Schedule> schedules = scheduleService.getAllSchedules();
+//	@GetMapping
+//	public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
+//		List<Schedule> schedules = scheduleService.getAllSchedules();
+//
+//		return ResponseEntity
+//			.ok()
+//			.body(schedules.stream().map(ScheduleResponse::from).toList());
+//	}
 
-		return ResponseEntity
-			.ok()
-			.body(schedules.stream().map(ScheduleResponse::from).toList());
+	@GetMapping
+	public ResponseEntity<PageResponse<Schedule>> getAllSchedules(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		PageResponse<Schedule> schedules = scheduleService.getAllSchedules(page, size);
+		return ResponseEntity.ok(schedules);
 	}
 
 	@GetMapping("/{id}")

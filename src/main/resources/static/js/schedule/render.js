@@ -1,6 +1,11 @@
 const TARGET_ID = "schedule";
 
-export function renderAllSchedules(schedules) {
+export function renderAllSchedules({
+  content,
+  totalElements,
+  totalPages,
+  number
+}) {
   const $target = document.getElementById(TARGET_ID);
   $target.innerHTML = `
         <h1>All Schedules</h1>
@@ -13,7 +18,7 @@ export function renderAllSchedules(schedules) {
             </tr>
           </thead>
           <tbody>
-          ${schedules.map(schedule =>
+          ${content.map(schedule =>
       `<tr class="schedule-item" data-id="${schedule.id}">
                 <td>${schedule.id}</td>
                 <td>${schedule.content}</td>
@@ -25,6 +30,12 @@ export function renderAllSchedules(schedules) {
               </tr>`).join('')}
           </tbody>
         </table>
+        <div class="pagination">
+          ${Array.from({length: totalPages}, (_, i) =>
+      `<button data-action="page-${i}" ${i === number ? 'disabled' : ''}>${i
+      + 1}</button>`
+  ).join('')}
+        </div>
       <br/>
       <button data-action="create">Create New Schedule</button>
   `;

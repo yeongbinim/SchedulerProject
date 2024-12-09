@@ -1,11 +1,12 @@
 package yeim.scheduler.schedule.infrastructure;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
+import yeim.scheduler.common.PageResponse;
 import yeim.scheduler.schedule.domain.Schedule;
 
 @Repository
@@ -18,12 +19,19 @@ public class MemoryScheduleRepository implements ScheduleRepository {
 	public Schedule create(Schedule schedule) {
 		schedule.setId(sequence.incrementAndGet());
 		store.put(schedule.getId(), schedule);
+
 		return schedule;
 	}
 
 	@Override
-	public List<Schedule> findAll() {
-		return new ArrayList<>(store.values());
+	public PageResponse<Schedule> findAll(int page, int size) {
+		int start = page * size;
+		List<Schedule> schedules = store.values().stream()
+			.sorted(Comparator.comparing(Schedule::getUpdatedAt).reversed())
+			.skip(start)
+			.limit(size)
+			.toList();
+		return new PageResponse<>(schedules, page, size, store.size());
 	}
 
 	@Override

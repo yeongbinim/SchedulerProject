@@ -1,5 +1,5 @@
-export async function getSchedules() {
-  const response = await fetch('/api/schedules', {
+export async function getSchedules(page = 0, size = 10) {
+  const response = await fetch(`/api/schedules?page=${page}&size=${size}`, {
     method: 'GET'
   });
   if (!response.ok) {
