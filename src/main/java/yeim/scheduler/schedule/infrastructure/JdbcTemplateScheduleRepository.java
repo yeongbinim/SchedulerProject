@@ -56,9 +56,11 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
 		int offset = page * size;
 		String sql = """
-			SELECT id, member_id, content, created_at, updated_at
-			FROM schedule
-			ORDER BY updated_at DESC
+			SELECT s.id, s.member_id, s.content, s.created_at, s.updated_at,
+			       m.name as member_name, m.email as member_email, m.password as member_password, m.created_at as member_created_at, m.updated_at as member_updated_at
+			FROM schedule s
+			JOIN member m ON s.member_id = m.id
+			ORDER BY s.updated_at DESC
 			LIMIT ? OFFSET ?
 			""";
 		List<Schedule> schedules = template.query(
@@ -73,9 +75,11 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 	@Override
 	public Optional<Schedule> findById(Long id) {
 		String sql = """
-			SELECT id, member_id, content, created_at, updated_at
-			FROM schedule
-			WHERE id = ?
+			SELECT s.id, s.member_id, s.content, s.created_at, s.updated_at,
+			       m.name as member_name, m.email as member_email, m.password as member_password, m.created_at as member_created_at, m.updated_at as member_updated_at
+			FROM schedule s
+			JOIN member m ON s.member_id = m.id
+			WHERE s.id = ?
 			""";
 		Schedule schedule = template.queryForObject(sql, scheduleRowMapper(), id);
 		return Optional.ofNullable(schedule);
@@ -111,7 +115,14 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 
 	private RowMapper<Schedule> scheduleRowMapper() {
 		return (rs, rowNum) -> {
-			Member member = memberRepository.findById(rs.getLong("member_id")).orElse(null);
+			Member member = new Member(
+				rs.getLong("member_id"),
+				rs.getString("member_name"),
+				rs.getString("member_email"),
+				rs.getString("member_password"),
+				rs.getTimestamp("member_created_at").toLocalDateTime(),
+				rs.getTimestamp("member_updated_at").toLocalDateTime()
+			);
 			return new Schedule(
 				rs.getLong("id"),
 				member,
@@ -121,4 +132,5 @@ public class JdbcTemplateScheduleRepository implements ScheduleRepository {
 			);
 		};
 	}
+
 }
