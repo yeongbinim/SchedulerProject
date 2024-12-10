@@ -13,6 +13,8 @@
 
   ![ezgif-7-8a8354ddfe](https://github.com/user-attachments/assets/61e07b55-a7cd-49f3-b329-7c8bf075fd47)
 
+<br/>
+
 ## 구현 과정
 
 아래 링크를 통해 각 단계별 브랜치로 이동하여 코드를 확인하실 수 있습니다.
@@ -23,6 +25,10 @@
 | [Level 3](https://github.com/yeongbinim/SchedulerProject/tree/lv3_member-normalization)ㅤㅤㅤ    | (🛠 refactor) 작성자를 일정과 분리해서 관리                       |
 | [Level 4](https://github.com/yeongbinim/SchedulerProject/tree/lv4_paging-schedule-list)ㅤㅤㅤㅤ   | (🛠 refactor) 효율적으로 표시하기 위해 데이터를 여러 페이지로 나눔          |
 | [Level5, 6](https://github.com/yeongbinim/SchedulerProject/tree/lv6_exception-validation)ㅤㅤㅤㅤ | (🎁 feature) **예외 발생에 대한 적절한 코드를 응답하고, 요청에 대해 검증한다** |
+
+[[고민 해결 과정, 트러블 슈팅 보러가기]](./READPROCESS.md)
+
+<br/>
 
 ## ERD
 
@@ -49,6 +55,8 @@ erDiagram
 ```
 
 [[Member DDL 바로가기]](./sql/member_ddl.sql) <br/> [[Schedule DDL 바로가기]](./sql/schedule_ddl.sql)
+
+<br/>
 
 ## API 명세
 
