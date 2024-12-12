@@ -2,6 +2,7 @@ package yeim.scheduler.schedule.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,23 +28,6 @@ import yeim.scheduler.schedule.service.ScheduleService;
 public class ApiScheduleController {
 
 	private final ScheduleService scheduleService;
-	
-	@GetMapping
-	public ResponseEntity<PageResponse<Schedule>> getAllSchedules(
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size) {
-		PageResponse<Schedule> schedules = scheduleService.getAllSchedules(page, size);
-		return ResponseEntity.ok(schedules);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<ScheduleResponse> getScheduleById(@PathVariable Long id) {
-		Schedule schedule = scheduleService.getScheduleById(id);
-
-		return ResponseEntity
-			.ok()
-			.body(ScheduleResponse.from(schedule));
-	}
 
 	@PostMapping
 	public ResponseEntity<Void> createSchedule(@RequestParam Long memberId,
@@ -53,6 +37,34 @@ public class ApiScheduleController {
 		return ResponseEntity
 			.created(URI.create("/api/schedules/" + createdSchedule.getId()))
 			.build();
+	}
+
+	@GetMapping
+	public ResponseEntity<PageResponse<ScheduleResponse>> getAllSchedules(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+
+		PageResponse<Schedule> schedules = scheduleService.getAllSchedules(page, size);
+
+		List<ScheduleResponse> scheduleResponses = schedules.getContent().stream()
+			.map(ScheduleResponse::from)
+			.toList();
+
+		PageResponse<ScheduleResponse> response = new PageResponse<>(
+			scheduleResponses,
+			schedules.getCurrentPage(),
+			schedules.getPageSize(),
+			schedules.getTotalElements());
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ScheduleResponse> getScheduleById(@PathVariable Long id) {
+		Schedule schedule = scheduleService.getScheduleById(id);
+
+		return ResponseEntity
+			.ok()
+			.body(ScheduleResponse.from(schedule));
 	}
 
 	@PutMapping("/{id}")

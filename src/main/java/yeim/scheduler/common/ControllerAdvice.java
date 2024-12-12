@@ -89,8 +89,8 @@ public class ControllerAdvice {
 		HttpServletRequest request,
 		MethodArgumentTypeMismatchException e
 	) {
-		String errorMessage = String.format("파라미터 타입 불일치: %s (기대된 타입: %s, 실제 값: %s)",
-			e.getName(), Objects.requireNonNull(e.getRequiredType()).getSimpleName(), e.getValue());
+		String errorMessage = String.format("파라미터 타입 불일치: %s (기대된 타입: %s, 실제 값: %s)", e.getName(),
+			Objects.requireNonNull(e.getRequiredType()).getSimpleName(), e.getValue());
 		log.warn("잘못된 요청이 들어왔습니다. URI:{}, 내용:{}", request.getRequestURI(), errorMessage);
 		return ResponseEntity
 			.badRequest()
